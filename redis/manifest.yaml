@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: someshwarsangaraju/redis:v1
+        image: redis:7.0
         imagePullPolicy: Always
         readinessProbe:
           tcpSocket:

@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  namespace: roboshop
+data:
+  my.cnf: |
+    [mysqld]
+    innodb_redo_log_capacity = 2G
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,18 +38,15 @@ spec:
       - name: mysql
         image: someshwarsangaraju/mysql:v1
         imagePullPolicy: Always
-        readinessProbe:
-          tcpSocket:
-            port: 6379 
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: 6379 
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        # ports:
-        # - containerPort: 80
+        volumeMounts:
+        - name: mysql-config
+          mountPath: /etc/mysql/conf.d/my.cnf
+          subPath: my.cnf
+      volumes:
+        - name: mysql-config
+          configMap:
+            name: mysql
+       
 
 ---
 
@@ -54,6 +62,6 @@ spec:
     environment: dev
   ports:
   - protocol: TCP
-    port: 6379 
-    targetPort: 6379 
+    port: 3306 
+    targetPort: 3306 
 

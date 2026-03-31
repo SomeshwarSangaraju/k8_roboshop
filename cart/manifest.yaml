@@ -4,9 +4,9 @@ metadata:
   name: cart
   namespace: roboshop
 data:
-  REDIS_HOST="redis"
-  CATALOGUE_HOST="catalogue"
-  CATALOGUE_PORT="8080"
+  REDIS_HOST: "redis"
+  CATALOGUE_HOST: "catalogue"
+  CATALOGUE_PORT: "8080"
 ---
 
 apiVersion: apps/v1
@@ -22,14 +22,17 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      labels:
-        project: roboshop
-        component: cart
-        environment: dev
+      project: roboshop
+      component: cart
+      environment: dev
     template:
       metadata:
         name: cart
         namespace: roboshop
+        labels:
+          project: roboshop
+          component: cart
+          environment: dev
       spec:
         containers:
         - name: cart
@@ -38,7 +41,21 @@ spec:
           envFrom:
           - configMapRef:
               name: cart
-        
+          ports:
+          - name: liveness-port
+            containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: liveness-port
+            failureThreshold: 1
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: liveness-port
+            failureThreshold: 11
+            periodSeconds: 15
 
 ---
 

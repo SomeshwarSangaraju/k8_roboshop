@@ -27,14 +27,19 @@ spec:
       - name: rabbitmq
         image: someshwarsangaraju/rabbitmq:v1
         imagePullPolicy: Always
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: roboshop
+        - name: RABBITMQ_DEFAULT_PASS
+          value: roboshop123
         readinessProbe:
           tcpSocket:
-            port: 6379 
+            port: 5672 
           initialDelaySeconds: 10
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
-            port: 6379 
+            port: 5672 
           initialDelaySeconds: 5
           periodSeconds: 5
         # ports:
@@ -54,6 +59,6 @@ spec:
     environment: dev
   ports:
   - protocol: TCP
-    port: 6379 
-    targetPort: 6379 
+    port: 5672 
+    targetPort: 5672 
 
