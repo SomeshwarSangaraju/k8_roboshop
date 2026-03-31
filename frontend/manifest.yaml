@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: ConfigMap
+metadata:
+  name: frontend
+  namespace: roboshop
+data:
+  CART_HOST: "cart"
+  CART_PORT: "8080"
+  USER_HOST: "user"
+  USER_PORT: "8080"
+  AMQP_HOST: "rabbitmq"
+  AMQP_USER: "roboshop"
+  AMQP_PASS: "roboshop123"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: roboshop
+  labels:
+    project: roboshop
+    component: frontend
+    environment: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      labels:
+        project: roboshop
+        component: frontend
+        environment: dev
+    template:
+      metadata:
+        name: frontend
+        namespace: roboshop
+      spec:
+        containers:
+        - name: frontend
+          image: someshwarsangaraju/frontend:v1
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: frontend
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: roboshop
+spec:
+  selector:
+    project: roboshop
+    component: frontend
+    environment: dev
+  ports:
+  - protocol: TCP
+    port: 8080 
+    targetPort: 8080 
